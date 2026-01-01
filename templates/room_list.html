@@ -1,0 +1,305 @@
+{% extends 'base.html' %}
+{% block title %}Daftar Ruangan{% endblock %}
+
+{% block content %}
+<div>
+  <h1 class="text-3xl font-semibold">Daftar Ruangan</h1>
+</div>
+
+<div class="bg-white rounded-3xl shadow-sm p-6">
+
+  <!-- Search Form -->
+  <form method="GET" class="mb-6 flex gap-2">
+    <div class="flex-1 relative">
+      <svg xmlns="http://www.w3.org/2000/svg"
+           width="24" height="24" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round"
+           class="lucide lucide-search absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+           aria-hidden="true">
+        <path d="m21 21-4.34-4.34"></path>
+        <circle cx="11" cy="11" r="8"></circle>
+      </svg>
+
+      <input
+        type="text"
+        name="search"
+        placeholder="Cari berdasarkan nama ruangan atau lantai..."
+        class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6777ef] focus:border-transparent"
+        value="{{ search_query }}"
+      >
+    </div>
+
+    <button type="submit"
+            class="px-6 py-3 bg-[#6777ef] text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+      Cari
+    </button>
+
+    <a href="{% url 'room_list' %}"
+       class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+      Reset
+    </a>
+  </form>
+
+  {% if room_status %}
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+    {% for item in room_status %}
+    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm h-full flex flex-col">
+
+      <div class="mb-4">
+        <h3 class="text-2xl text-gray-900 mb-1 font-semibold">{{ item.room.name }}</h3>
+        <p class="text-gray-600">{{ item.room.floor }}</p>
+      </div>
+
+      <div class="flex items-center gap-2 mb-4 text-gray-600">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="24" height="24" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round"
+             class="lucide lucide-users w-4 h-4 text-gray-400"
+             aria-hidden="true">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+          <path d="M16 3.128a4 4 0 0 1 0 7.744"></path>
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+        </svg>
+        <span>Kapasitas Ruangan: {{ item.room.capacity }}</span>
+      </div>
+
+      {% if item.room.facilities.all %}
+      <div class="flex flex-wrap gap-2 mb-4">
+        {% for facility in item.room.facilities.all %}
+        <span class="inline-flex items-center gap-1 px-3 py-1 bg-[#6777ef]/25 text-[#6777ef] rounded-full text-sm">
+          {{ facility.icon_svg|safe }}
+          {{ facility.name }}
+        </span>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="mt-auto">
+        {% if item.bookings %}
+        <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <p class="text-red-900 text-sm mb-1">Dipinjam oleh:</p>
+
+          {% for b in item.bookings|slice:":1" %}
+          <p class="text-red-700 text-sm">
+            <span class="font-medium">{{ b.user.username }}</span>
+            ({{ b.date|date:"d M Y" }})
+          </p>
+
+          <p class="text-red-600 text-sm flex items-center gap-1 mt-1">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 width="24" height="24" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round"
+                 class="lucide lucide-clock w-3 h-3"
+                 aria-hidden="true">
+              <path d="M12 6v6l4 2"></path>
+              <circle cx="12" cy="12" r="10"></circle>
+            </svg>
+            {{ b.start_time|time:"H:i" }} – {{ b.end_time|time:"H:i" }}
+          </p>
+          {% endfor %}
+
+          {% if item.bookings|length > 1 %}
+          <button onclick="openModal('modal-{{ item.room.id }}')"
+                  class="text-sm text-red-500 mt-1 cursor-pointer hover:underline">
+            +{{ item.bookings|length|add:"-1" }} more
+          </button>
+
+          <div id="modal-{{ item.room.id }}"
+               class="fixed inset-0 bg-black/40 backdrop-blur-xs hidden items-center justify-center z-50 transition-all duration-200">
+            <div class="bg-white w-full max-w-6xl rounded-3xl shadow-lg p-5 relative">
+              <h3 class="text-lg font-semibold mb-3">
+                Detail Peminjaman – {{ item.room.name }}
+              </h3>
+
+              <div class="space-y-3 max-h-56 overflow-y-auto pr-2">
+                {% for b in item.bookings %}
+                <div class="border-b pb-2">
+                  <p class="text-sm font-medium text-gray-800">{{ b.user.username }}</p>
+                  <p class="text-xs text-gray-600">{{ b.date|date:"d M Y" }}</p>
+                  <p class="text-xs text-gray-600">
+                    {{ b.start_time|time:"H:i" }} – {{ b.end_time|time:"H:i" }}
+                  </p>
+                  <p class="text-xs text-gray-600">{{ b.purpose }}</p>
+                </div>
+                {% endfor %}
+              </div>
+
+              <div class="mt-4 text-right">
+                <button onclick="closeModal('modal-{{ item.room.id }}')"
+                        class="px-4 py-2 text-sm rounded-lg bg-gray-200 hover:bg-gray-300">
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Status & Action -->
+      <div class="flex items-center justify-between">
+        {% if item.bookings %}
+          <span class="px-3 py-1 rounded-full text-sm bg-red-100 text-red-700">
+            Sedang Dipinjam
+          </span>
+
+          {% if item.user_has_booking %}
+          <button disabled
+                  class="px-4 py-2 rounded-full bg-gray-300 text-gray-500 cursor-not-allowed">
+            Sudah Dibooking
+          </button>
+          {% else %}
+          <button onclick="openBookingModal('{{ item.room.id }}')"
+                  class="px-4 py-2 border border-[#6777ef] text-[#6777ef] rounded-full">
+            Pilih Waktu Lain
+          </button>
+          {% endif %}
+
+        {% else %}
+          <span class="px-3 py-1 rounded-full text-sm bg-green-100 text-green-700">
+            Tersedia
+          </span>
+
+          {% if item.user_has_booking %}
+          <button disabled
+                  class="px-4 py-2 rounded-full bg-gray-300 text-gray-500 cursor-not-allowed">
+            Sudah Dibooking
+          </button>
+          {% else %}
+          <button onclick="openBookingModal('{{ item.room.id }}')"
+                  class="px-4 py-2 bg-[#6777ef] text-white rounded-full">
+            Ajukan Peminjaman
+          </button>
+          {% endif %}
+        {% endif %}
+      </div>
+
+      <!-- Booking Modal -->
+      <div id="booking-modal-{{ item.room.id }}"
+           class="fixed inset-0 bg-black/40 backdrop-blur-xs hidden items-center justify-center z-50">
+
+        <div class="bg-white w-full max-w-3xl rounded-2xl p-8 relative">
+          <button onclick="closeBookingModal('{{ item.room.id }}')"
+                  class="absolute top-4 right-4 text-gray-400 text-xl">&times;</button>
+
+          <h2 class="text-2xl font-semibold mb-2">{{ item.room.name }}</h2>
+
+          <form method="POST"
+                action="{% url 'booking_create' item.room.id %}"
+                class="space-y-4">
+
+            {% csrf_token %}
+
+            <div>
+              <label class="block text-sm">Tanggal</label>
+              <input type="date"
+                     name="date"
+                     min="{{ today|date:'Y-m-d' }}"
+                     required
+                     class="w-full border rounded-lg px-4 py-2">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm">Waktu Mulai</label>
+                <input type="time" name="start_time"
+                       required class="w-full border rounded-lg px-4 py-2">
+              </div>
+
+              <div>
+                <label class="block text-sm">Waktu Selesai</label>
+                <input type="time" name="end_time"
+                       required class="w-full border rounded-lg px-4 py-2">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm">Keperluan</label>
+              <textarea name="purpose" rows="3" required
+                        class="w-full border rounded-lg px-4 py-2"></textarea>
+            </div>
+
+            <div class="flex gap-3 pt-4">
+              <button type="submit"
+                      class="flex-1 bg-[#6777ef] text-white py-2 rounded-lg">
+                Ajukan
+              </button>
+
+              <button type="button"
+                      onclick="closeBookingModal('{{ item.room.id }}')"
+                      class="px-6 py-2 border rounded-lg">
+                Batal
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="flex flex-col items-center justify-center py-16 bg-white rounded-lg border border-gray-200">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         width="48" height="48" viewBox="0 0 24 24"
+         fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round"
+         class="lucide lucide-building w-12 h-12 text-gray-400 mb-4"
+         aria-hidden="true">
+      <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path>
+      <path d="M6 12h12"></path>
+      <path d="M6 19h12"></path>
+      <rect width="2" height="2" x="10" y="6" rx="1"></rect>
+      <rect width="2" height="2" x="14" y="6" rx="1"></rect>
+      <rect width="2" height="2" x="10" y="13" rx="1"></rect>
+      <rect width="2" height="2" x="14" y="13" rx="1"></rect>
+    </svg>
+
+    <h3 class="text-lg font-semibold text-gray-700 mb-2">
+      Ruangan tidak ditemukan
+    </h3>
+
+    <p class="text-gray-500 mb-4">
+      Coba ubah pencarian Anda atau kembali ke daftar semua ruangan
+    </p>
+
+    <a href="{% url 'room_list' %}"
+       class="px-6 py-2 bg-[#6777ef] text-white rounded-lg hover:bg-blue-700 transition-colors">
+      Lihat Semua Ruangan
+    </a>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+function openModal(id) {
+  const modal = document.getElementById(id);
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+}
+
+function closeModal(id) {
+  const modal = document.getElementById(id);
+  modal.classList.add("hidden");
+  modal.classList.remove("flex");
+}
+
+function openBookingModal(id) {
+  document.getElementById(`booking-modal-${id}`).classList.remove('hidden');
+  document.getElementById(`booking-modal-${id}`).classList.add('flex');
+}
+
+function closeBookingModal(id) {
+  document.getElementById(`booking-modal-${id}`).classList.add('hidden');
+  document.getElementById(`booking-modal-${id}`).classList.remove('flex');
+}
+</script>
+{% endblock %}
