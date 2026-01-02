@@ -11,7 +11,15 @@ from .service import validate_booking, booking_success_message
 
 @login_required
 def home(request):
-    return render(request, 'index.html')
+    today = timezone.localdate()
+    total_rooms = Room.objects.count()
+    booking_today = Booking.objects.filter(user=request.user, date=today)
+    total_booking_today = booking_today.count()
+    return render(request, 'index.html', {
+        'total_rooms' : total_rooms,
+        'booking' : booking_today,
+        'total_booking_today' : total_booking_today
+    })
 
 @login_required
 def room_list(request):
