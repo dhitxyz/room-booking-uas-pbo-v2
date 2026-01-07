@@ -25,13 +25,13 @@
         type="text"
         name="search"
         placeholder="Cari berdasarkan nama ruangan atau lantai..."
-        class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6777ef] focus:border-transparent"
+        class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff2681] focus:border-transparent"
         value="{{ search_query }}"
       >
     </div>
 
     <button type="submit"
-            class="px-6 py-3 bg-[#6777ef] text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+            class="px-6 py-3 bg-[#ff2681] text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
       Cari
     </button>
 
@@ -70,7 +70,7 @@
       {% if item.room.facilities.all %}
       <div class="flex flex-wrap gap-2 mb-4">
         {% for facility in item.room.facilities.all %}
-        <span class="inline-flex items-center gap-1 px-3 py-1 bg-[#6777ef]/25 text-[#6777ef] rounded-full text-sm">
+        <span class="inline-flex items-center gap-1 px-3 py-1 bg-[#ff2681]/25 text-[#ff2681] rounded-full text-sm">
           {{ facility.icon_svg|safe }}
           {{ facility.name }}
         </span>
@@ -156,7 +156,7 @@
           </button>
           {% else %}
           <button onclick="openBookingModal('{{ item.room.id }}')"
-                  class="px-4 py-2 border border-[#6777ef] text-[#6777ef] rounded-full">
+                  class="px-4 py-2 border border-[#ff2681] text-[#ff2681] rounded-full">
             Pilih Waktu Lain
           </button>
           {% endif %}
@@ -173,7 +173,7 @@
           </button>
           {% else %}
           <button onclick="openBookingModal('{{ item.room.id }}')"
-                  class="px-4 py-2 bg-[#6777ef] text-white rounded-full">
+                  class="px-4 py-2 bg-[#ff2681] text-white rounded-full">
             Ajukan Peminjaman
           </button>
           {% endif %}
@@ -227,7 +227,7 @@
 
             <div class="flex gap-3 pt-4">
               <button type="submit"
-                      class="flex-1 bg-[#6777ef] text-white py-2 rounded-lg">
+                      class="flex-1 bg-[#ff2681] text-white py-2 rounded-lg">
                 Ajukan
               </button>
 
@@ -272,7 +272,7 @@
     </p>
 
     <a href="{% url 'room_list' %}"
-       class="px-6 py-2 bg-[#6777ef] text-white rounded-lg hover:bg-blue-700 transition-colors">
+       class="px-6 py-2 bg-[#ff2681] text-white rounded-lg hover:bg-blue-700 transition-colors">
       Lihat Semua Ruangan
     </a>
   </div>

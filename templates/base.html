@@ -33,7 +33,7 @@
         <div class="p-6 flex flex-col h-full">
 
           <div class="flex justify-center mb-6">
-            <h2 class="text-2xl font-semibold tracking-wide">Pinjem<span class="text-[#6777ef]">.in</span></h2>
+            <h2 class="text-2xl font-semibold tracking-wide">Pinjem<span class="text-[#ff2681]">.in</span></h2>
           </div>
 
           <nav class="flex-1">
@@ -43,7 +43,7 @@
                 <a href="{% url 'home' %}"
                    class="flex items-center gap-3 px-4 py-3 rounded-xl
                   {% if request.path == '/' %}
-                    bg-[#6777ef]/30 text-[#6777ef] font-medium
+                    bg-[#ff2681]/30 text-[#ff2681] font-medium
                   {% else %}
                     text-gray-600 hover:bg-gray-100
                   {% endif %}">
@@ -64,7 +64,7 @@
                 <a href="{% url 'room_list' %}"
                    class="flex items-center gap-3 px-4 py-3 rounded-xl
                   {% if request.path == '/room/' %}
-                    bg-[#6777ef]/30 text-[#6777ef] font-medium
+                    bg-[#ff2681]/30 text-[#ff2681] font-medium
                   {% else %}
                     text-gray-600 hover:bg-gray-100
                   {% endif %}">
@@ -86,7 +86,7 @@
                 <a href="{% url 'booking_list' %}"
                    class="flex items-center gap-3 px-4 py-3 rounded-xl
                   {% if request.path == '/list/' %}
-                    bg-[#6777ef]/30 text-[#6777ef] font-medium
+                    bg-[#ff2681]/30 text-[#ff2681] font-medium
                   {% else %}
                     text-gray-600 hover:bg-gray-100
                   {% endif %}">
@@ -146,7 +146,7 @@
 
           <div class="relative flex items-center gap-3">
             <button onclick="toggleProfileMenu()"
-              class="w-9 h-9 rounded-full bg-[#6777ef] text-white flex items-center justify-center cursor-pointer">
+              class="w-9 h-9 rounded-full bg-[#ff2681] text-white flex items-center justify-center cursor-pointer">
               {{ user.username|slice:"-2:"|upper }}
             </button>
 
@@ -216,7 +216,7 @@ setTimeout(() => {
     toast.classList.add('opacity-0', 'translate-x-4');
     setTimeout(() => toast.remove(), 500);
   });
-}, 4000);
+}, 15000);
 </script>
 
 <script>
